@@ -2,7 +2,10 @@ var startGame = document.querySelector("#next");
 var score = 0;
 var timeLeft;
 
-
+var highscore ={
+    name:"",
+    score:0
+}
 
 var questionLibrary =[
     {
@@ -183,13 +186,10 @@ function getQuestion(score){
             clicked.style.background="red";
             if(timeLeft>=5){
             timeLeft=timeLeft-5;}
-            else{
-                if (score > highscore.score){
+            else if (score > highscore.score){
                     var userName = prompt(`Score: ${score} \n Enter your name`);
-                   var highscore = {
-                        name:userName,
-                        score:score
-                    }
+                   highscore.score=score;
+                   highscore.name = userName;
                     localStorage.setItem("highscore",JSON.stringify(highscore));
                     var displayHighscore = document.querySelector("#highscore");
                     displayHighscore.textContent = `Highscore ${highscore.score} by: ${highscore.name}`
@@ -206,7 +206,7 @@ function getQuestion(score){
             option4.disabled=true;
 
         }
-     }})
+     })
             
      next.addEventListener("click",function(){
         index++;
@@ -248,25 +248,6 @@ function game(){
         }
         if(timeLeft === 0){
             clearInterval(timerInterval);
-            if (score > highscore.score){
-                var userName = prompt(`Score: ${score} \n Enter your name`);
-                highscore.score=score;
-                highscore.name= userName;
-                localStorage.setItem("highscore",JSON.stringify(highscore));
-                highscore = {
-                    name:JSON.parse(localStorage.getItem("highscore")).name,
-                    score:JSON.parse(localStorage.getItem("highscore")).score
-                }
-                var displayHighscore = document.querySelector("#highscore");
-                displayHighscore.textContent = `Highscore ${highscore.score} by: ${highscore.name}`
-                next.disabled=true;
-                return;
-            } else
-            {
-                alert ("game over");
-                return;
-            }
-            
         } 
     },1000)
    
