@@ -16,10 +16,9 @@ header{
 }
 .center-text{
     text-align: center;
-    display: flex;
-    flex-direction: column;
+    display: block;
 }
-#start{
+#next{
     position: absolute;
     left: 45%;
     border: none;
@@ -27,5 +26,8 @@ header{
     color: black;
     font-size: 30px;
     
+}
+.answers{
+    display: block;
 }
 

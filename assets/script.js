@@ -1,4 +1,9 @@
-var startGame = document.querySelector("#start");
+var startGame = document.querySelector("#next");
+var score = 0;
+var timeLeft;
+
+
+
 var questionLibrary =[
     {
         question:"Which of the following is an advantage of using JavaScript?",
@@ -82,11 +87,11 @@ var questionLibrary =[
     },
     {
         question:" Arrays in JavaScript are defined by which of the following statements?",
-        answer1: "t is an ordered list of values" ,
+        answer1: "It is an ordered list of values" ,
         answer2: "It is an ordered list of objects",
         answer3: "It is an ordered list of string",
         answer4: "It is an ordered list of functions",
-        correct: "t is an ordered list of values"
+        correct: "It is an ordered list of values"
     }
 ];
 function shuffleArray(array) {
@@ -97,16 +102,136 @@ function shuffleArray(array) {
         array[random] = temp;
     }
 }
+// var displayHighscore = document.querySelector("#display-highscore");
+var displayBtn = document.querySelector("#highscore");
+displayBtn.addEventListener("click",getHighscore);
+
+function getHighscore(){
+   
+    var highscore = {
+        name:JSON.parse(localStorage.getItem("highscore")).name,
+        score:JSON.parse(localStorage.getItem("highscore")).score
+    }
+    
+    displayBtn.textContent = `Highscore ${highscore.score} by: ${highscore.name}`
+    
+    
+}
+
+var index = 0;
+function getQuestion(score){
+    if (timeLeft==0){
+        return;
+    }
+    var questionNum = document.querySelector("#title");
+        questionNum.setAttribute('class','text-left');
+    var question = document.querySelector("#info");
+        question.setAttribute('class','text-left');
+    var answers = document.querySelector("#options");
+    
+        if(index <= questionLibrary.length-1){
+        questionNum.textContent = `Question number ${index+1}`;
+        question.textContent = questionLibrary[index].question;
+        var option1 = document.createElement("button");
+        option1.setAttribute('class','answers');
+        var option2 = document.createElement("button");
+        option2.setAttribute('class','answers');
+        var option3 = document.createElement("button");
+        option3.setAttribute('class','answers');
+        var option4 = document.createElement("button");
+        option4.setAttribute('class','answers');
+        option1.textContent = questionLibrary[index].answer1;
+        option2.textContent = questionLibrary[index].answer2;
+        option3.textContent = questionLibrary[index].answer3;
+        option4.textContent = questionLibrary[index].answer4;
+        answers.appendChild(option1);
+        answers.appendChild(option2);
+        answers.appendChild(option3);
+        answers.appendChild(option4);
+    var next = document.createElement("button");
+    next.setAttribute('class','text-center');
+    next.setAttribute('id','next');
+            next.textContent="Next Question";
+            next.disabled=true;
+            document.querySelector("#main").append(next);
+        } else{
+            if (score > highscore.score){
+                var userName = prompt(`Score: ${score} \n Enter your name`);
+                highscore.score=score;
+                highscore.name= userName;
+                localStorage.setItem("highscore",JSON.stringify(highscore));
+                timeLeft=0;
+                return;
+            } else{
+                alert ("game over");
+            }
+        }
+        
+     answers.addEventListener('click',function(event){
+        var clicked = event.target;
+        if (clicked.getAttribute('class') === "answers"){
+        var userAnswer = clicked.textContent;
+        if(userAnswer == questionLibrary[index].correct){
+            score++;
+            next.disabled=false;
+            clicked.style.background= "rgb(5, 213, 30)";
+            option1.disabled=true;
+            option2.disabled=true;
+            option3.disabled=true;
+            option4.disabled=true;
+        } else {
+            clicked.style.background="red";
+            if(timeLeft>=5){
+            timeLeft=timeLeft-5;}
+            else{
+                if (score > highscore.score){
+                    var userName = prompt(`Score: ${score} \n Enter your name`);
+                   var highscore = {
+                        name:userName,
+                        score:score
+                    }
+                    localStorage.setItem("highscore",JSON.stringify(highscore));
+                    var displayHighscore = document.querySelector("#highscore");
+                    displayHighscore.textContent = `Highscore ${highscore.score} by: ${highscore.name}`
+                    next.disabled=true;
+                    timeLeft=0;
+                    return;
+                } 
+                
+            }
+            next.disabled=false;
+            option1.disabled=true;
+            option2.disabled=true;
+            option3.disabled=true;
+            option4.disabled=true;
+
+        }
+     }})
+            
+     next.addEventListener("click",function(){
+        index++;
+        while (answers.hasChildNodes()){
+            answers.removeChild(answers.firstChild);
+        }
+        getQuestion(score);
+     });
+
+}
 
 function game(){
-
+    
+    score=0;
     shuffleArray(questionLibrary);
     var timeEl= document.querySelector("#countdown");
-    var timeLeft = 120;
+    timeLeft = 120;
     var timerInterval = setInterval(function(){
         timeLeft--;
         var minutes = Math.floor(timeLeft/60);
         var seconds = timeLeft%60
+        if(minutes<0 || seconds<0){
+            minutes=0;
+            seconds =0;
+        }
         if (seconds < 10){
             seconds = `0${seconds}`;
         }
@@ -123,10 +248,33 @@ function game(){
         }
         if(timeLeft === 0){
             clearInterval(timerInterval);
-            alert("time is up!");
+            if (score > highscore.score){
+                var userName = prompt(`Score: ${score} \n Enter your name`);
+                highscore.score=score;
+                highscore.name= userName;
+                localStorage.setItem("highscore",JSON.stringify(highscore));
+                highscore = {
+                    name:JSON.parse(localStorage.getItem("highscore")).name,
+                    score:JSON.parse(localStorage.getItem("highscore")).score
+                }
+                var displayHighscore = document.querySelector("#highscore");
+                displayHighscore.textContent = `Highscore ${highscore.score} by: ${highscore.name}`
+                next.disabled=true;
+                return;
+            } else
+            {
+                alert ("game over");
+                return;
+            }
+            
         } 
     },1000)
+   
+    getQuestion(score);
+    startGame.remove();
     
+        
 }
+
 
 startGame.addEventListener("click",game);
