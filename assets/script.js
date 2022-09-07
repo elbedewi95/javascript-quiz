@@ -145,7 +145,7 @@ function getQuestion(){
             console.log(score);
             
             console.log(JSON.parse(localStorage.getItem("highscore")));
-          if (score > JSON.parse(localStorage.getItem("highscore")).score) {
+          
             var userName = prompt(`Score: ${score} \n Enter your name`);
              var highscore = {
               name: userName,
@@ -157,11 +157,7 @@ function getQuestion(){
             next.disabled = true;
             timeLeft = 0;
             return;
-          }
-          else{
-            alert("game over");
-            return;
-          }
+          
         }
         function myFunction(event) {
             var clicked = event.target;
