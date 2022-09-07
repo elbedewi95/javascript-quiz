@@ -207,7 +207,7 @@ function getQuestion(){
 function game(){
     shuffleArray(questionLibrary);
     var timeEl= document.querySelector("#countdown");
-    timeLeft = 60;
+    timeLeft = 90;
     var timerInterval = setInterval(function(){
         timeLeft--;
         var minutes = Math.floor(timeLeft/60);
@@ -241,6 +241,6 @@ function game(){
         
 }
 
-var displayHighscore = document.querySelector("#highscore");
-displayHighscore.textContent = `Highscore: ${JSON.parse(localStorage.getItem("highscore")).score}, by: ${JSON.parse(localStorage.getItem("highscore")).name}`;
+// var displayHighscore = document.querySelector("#highscore");
+// displayHighscore.textContent = `Highscore: ${JSON.parse(localStorage.getItem("highscore")).score}, by: ${JSON.parse(localStorage.getItem("highscore")).name}`;
 startGame.addEventListener("click",game);
