@@ -1,11 +1,8 @@
 var startGame = document.querySelector("#next");
-var score = 0;
 var timeLeft;
+var score = 0;
 
-var highscore ={
-    name:"",
-    score:0
-}
+
 
 var questionLibrary =[
     {
@@ -105,36 +102,20 @@ function shuffleArray(array) {
         array[random] = temp;
     }
 }
-// var displayHighscore = document.querySelector("#display-highscore");
-var displayBtn = document.querySelector("#highscore");
-displayBtn.addEventListener("click",getHighscore);
-
-function getHighscore(){
-   
-    var highscore = {
-        name:JSON.parse(localStorage.getItem("highscore")).name,
-        score:JSON.parse(localStorage.getItem("highscore")).score
-    }
-    
-    displayBtn.textContent = `Highscore ${highscore.score} by: ${highscore.name}`
-    
-    
-}
 
 var index = 0;
-function getQuestion(score){
-    if (timeLeft==0){
-        return;
-    }
+function getQuestion(){
+    console.log("question");
+    
     var questionNum = document.querySelector("#title");
         questionNum.setAttribute('class','text-left');
-    var question = document.querySelector("#info");
-        question.setAttribute('class','text-left');
+    var questionField = document.querySelector("#info");
+        questionField.setAttribute('class','text-left');
     var answers = document.querySelector("#options");
     
-        if(index <= questionLibrary.length-1){
+        if(index <= questionLibrary.length-1 && timeLeft>0){
         questionNum.textContent = `Question number ${index+1}`;
-        question.textContent = questionLibrary[index].question;
+        questionField.textContent = questionLibrary[index].question;
         var option1 = document.createElement("button");
         option1.setAttribute('class','answers');
         var option2 = document.createElement("button");
@@ -152,78 +133,81 @@ function getQuestion(score){
         answers.appendChild(option3);
         answers.appendChild(option4);
     var next = document.createElement("button");
+    
     next.setAttribute('class','text-center');
     next.setAttribute('id','next');
             next.textContent="Next Question";
             next.disabled=true;
             document.querySelector("#main").append(next);
-        } else{
-            if (score > highscore.score){
-                var userName = prompt(`Score: ${score} \n Enter your name`);
-                highscore.score=score;
-                highscore.name= userName;
-                localStorage.setItem("highscore",JSON.stringify(highscore));
-                timeLeft=0;
-                return;
-            } else{
-                alert ("game over");
-            }
-        }
-        
-     answers.addEventListener('click',function(event){
-        var clicked = event.target;
-        if (clicked.getAttribute('class') === "answers"){
-        var userAnswer = clicked.textContent;
-        if(userAnswer == questionLibrary[index].correct){
-            score++;
-            next.disabled=false;
-            clicked.style.background= "rgb(5, 213, 30)";
-            option1.disabled=true;
-            option2.disabled=true;
-            option3.disabled=true;
-            option4.disabled=true;
         } else {
-            clicked.style.background="red";
-            if(timeLeft>=5){
-            timeLeft=timeLeft-5;}
-            else if (score > highscore.score){
-                    var userName = prompt(`Score: ${score} \n Enter your name`);
-                   highscore.score=score;
-                   highscore.name = userName;
-                    localStorage.setItem("highscore",JSON.stringify(highscore));
-                    var displayHighscore = document.querySelector("#highscore");
-                    displayHighscore.textContent = `Highscore ${highscore.score} by: ${highscore.name}`
-                    next.disabled=true;
-                    timeLeft=0;
-                    return;
-                } 
-                
-            }
-            next.disabled=false;
-            option1.disabled=true;
-            option2.disabled=true;
-            option3.disabled=true;
-            option4.disabled=true;
-
-        }
-     })
             
+            timeLeft=0;
+            console.log(score);
+            
+            console.log(JSON.parse(localStorage.getItem("highscore")));
+          if (score > JSON.parse(localStorage.getItem("highscore")).score) {
+            var userName = prompt(`Score: ${score} \n Enter your name`);
+             var highscore = {
+              name: userName,
+              score: score,
+            };
+            localStorage.setItem("highscore", JSON.stringify(highscore));
+            var displayHighscore = document.querySelector("#highscore");
+            displayHighscore.textContent = `Highscore ${highscore.score} by: ${highscore.name}`;
+            next.disabled = true;
+            timeLeft = 0;
+            return;
+          }
+          else{
+            alert("game over");
+            return;
+          }
+        }
+        function myFunction(event) {
+            var clicked = event.target;
+            if (clicked.getAttribute("class") === "answers") {
+              var userAnswer = clicked.textContent;
+              if (userAnswer == questionLibrary[index].correct) {
+                score++;
+                console.log("correct");
+                next.disabled = false;
+                clicked.style.background = "rgb(5, 213, 30)";
+                option1.disabled = true;
+                option2.disabled = true;
+                option3.disabled = true;
+                option4.disabled = true;
+              } else {
+                console.log("wrong");
+                clicked.style.background = "red";
+                if (timeLeft >= 5) {
+                  timeLeft = timeLeft - 5;
+                } 
+                next.disabled = false;
+                option1.disabled = true;
+                option2.disabled = true;
+                option3.disabled = true;
+                option4.disabled = true;
+              }
+            }
+            answers.removeEventListener("click", myFunction);
+          }
+        
+          answers.addEventListener("click", myFunction);
+     
      next.addEventListener("click",function(){
         index++;
         while (answers.hasChildNodes()){
             answers.removeChild(answers.firstChild);
         }
-        getQuestion(score);
+        getQuestion();
      });
 
 }
 
 function game(){
-    
-    score=0;
     shuffleArray(questionLibrary);
     var timeEl= document.querySelector("#countdown");
-    timeLeft = 120;
+    timeLeft = 60;
     var timerInterval = setInterval(function(){
         timeLeft--;
         var minutes = Math.floor(timeLeft/60);
@@ -251,11 +235,12 @@ function game(){
         } 
     },1000)
    
-    getQuestion(score);
+    getQuestion();
     startGame.remove();
     
         
 }
 
-
+var displayHighscore = document.querySelector("#highscore");
+displayHighscore.textContent = `Highscore: ${JSON.parse(localStorage.getItem("highscore")).score}, by: ${JSON.parse(localStorage.getItem("highscore")).name}`;
 startGame.addEventListener("click",game);
