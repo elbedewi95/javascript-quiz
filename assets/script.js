@@ -99,8 +99,34 @@ function shuffleArray(array) {
 }
 
 function game(){
+
     shuffleArray(questionLibrary);
-    console.log(questionLibrary);
+    var timeEl= document.querySelector("#countdown");
+    var timeLeft = 120;
+    var timerInterval = setInterval(function(){
+        timeLeft--;
+        var minutes = Math.floor(timeLeft/60);
+        var seconds = timeLeft%60
+        if (seconds < 10){
+            seconds = `0${seconds}`;
+        }
+        timeEl.textContent = `${minutes}:${seconds}`;
+        timeEl.style.border ="2px solid black";
+        if(timeLeft >= 60){
+        timeEl.style.background = "rgb(5, 213, 30)";
+    }
+        else if(timeLeft < 60 && timeLeft >= 10){
+        timeEl.style.background = "orange";
+        }
+        else if (timeLeft < 10 && timeLeft > 0){
+            timeEl.style.background = "red";
+        }
+        if(timeLeft === 0){
+            clearInterval(timerInterval);
+            alert("time is up!");
+        } 
+    },1000)
+    
 }
 
 startGame.addEventListener("click",game);

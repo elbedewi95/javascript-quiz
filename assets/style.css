@@ -1,6 +1,16 @@
 body{
     width: 100vw;
 }
+header{
+    height: fit-content;
+    width: fit-content;
+    margin: 5px;
+    text-align: center;
+    font-size: 25px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
 .main{
     position: relative;
 }
@@ -18,3 +28,4 @@ body{
     font-size: 30px;
     
 }
+
